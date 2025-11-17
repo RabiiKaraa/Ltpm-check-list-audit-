@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leoni Audit Check-list</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #28a745;
+            --primary-hover: #218838;
+            --secondary-color: #007bff;
+            --danger-color: #dc3545;
+            --warning-color: #ffc107;
+            --info-color: #17a2b8;
+            --text-color: #333;
+            --light-gray: #f4f4f4;
+            --white: #fff;
+            --border-color: #ccc;
+            --shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+      
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+      
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: var(--text-color);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+      
+        .container {
+            width: 100%;
+            max-width: 1400px;
+            margin: 20px;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            background: white;
+        }
+      
+        .page {
+            display: none;
+            padding: 30px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+      
+        .active {
+            display: block;
+        }
+
+        /* VOTRE CSS COMPLET ICI - Je vais le raccourcir pour l'exemple */
+        .login-container {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            text-align: center;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+      
+        .logo {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        /* AJOUT: Section Partage Public */
+        .public-share-section {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: center;
+        }
+       
+        .public-link {
+            background: white;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+            word-break: break-all;
+            font-family: monospace;
+            border: 2px dashed #007bff;
+        }
+       
+        .qr-container {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+       
+        .qr-item {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+        }
+       
+        .social-share-buttons {
+            margin: 20px 0;
+        }
+       
+        .share-btn {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 5px;
+            margin: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+       
+        .share-btn.whatsapp { background: #25D366; }
+        .share-btn.email { background: #dc3545; }
+       
+        /* Continuez avec tout votre CSS existant... */
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Page de Login -->
+        <div id="login-page" class="page active">
+            <div class="login-container">
+                <div class="logo">Leoni</div>
+                <h2 class="login-title">Audit Check-list</h2>
+               
+                <!-- Section Partage Public -->
+                <div class="public-share-section">
+                    <h3>🌍 Application Publique</h3>
+                    <p>Cette application est accessible à tous sans connexion</p>
+                   
+                    <div class="public-link" id="publicLink">
+                        Chargement...
+                    </div>
+                    <button class="share-btn" onclick="copyPublicLink()">📋 Copier le Lien</button>
+                   
+                    <div class="qr-container">
+                        <div class="qr-item">
+                            <div class="qr-title"><strong>QR Code Application</strong></div>
+                            <div id="qr-app-public"></div>
+                            <p>Scannez pour ouvrir l'application</p>
+                        </div>
+                        <div class="qr-item">
+                            <div class="qr-title"><strong>QR Code Partage</strong></div>
+                            <div id="qr-share-public"></div>
+                            <p>Scannez pour partager</p>
+                        </div>
+                    </div>
+                   
+                    <div class="social-share-buttons">
+                        <button class="share-btn whatsapp" onclick="shareOnSocialMedia('whatsapp')">
+                            💬 Partager sur WhatsApp
+                        </button>
+                        <button class="share-btn email" onclick="shareOnSocialMedia('email')">
+                            📧 Partager par Email
+                        </button>
+                    </div>
+                </div>
+
+                <div class="login-info">
+                    <h4>Accès direct à l'application :</h4>
+                    <button class="share-btn" style="background: var(--primary-color); width: 100%;" onclick="startApplication()">
+                        🚀 Démarrer l'Application
+                    </button>
+                </div>
+            </div>
+        </div>
+      
+        <!-- Page Formulaire d'audit -->
+        <div id="form-page" class="page">
+            <!-- VOTRE CONTENU EXISTANT ICI -->
+            <h1>Check-list Audit LTPM</h1>
+            <div class="nav-buttons">
+                <button class="btn-secondary" onclick="showPage('login-page')">Retour</button>
+            </div>
+            <!-- ... le reste de votre formulaire ... -->
+        </div>
+      
+        <!-- Page Résultats -->
+        <div id="results-page" class="page">
+            <!-- VOTRE CONTENU EXISTANT ICI -->
+        </div>
+      
+        <!-- Page Historique -->
+        <div id="history-page" class="page">
+            <!-- VOTRE CONTENU EXISTANT ICI -->
+        </div>
+    </div>
+
+    <script>
+        // VOTRE JAVASCRIPT COMPLET ICI
+        let auditHistory = JSON.parse(localStorage.getItem('auditHistory')) || [];
+        let currentAudit = null;
+        let scoreChart, flagChart;
+      
+        // Utilisateurs prédéfinis
+        const users = {
+            "admin": "admin123",
+            "auditeur1": "pass123",
+            "leoni": "leoni2024"
+        };
+
+        // FONCTIONS PUREMENT PUBLIQUES
+        function startApplication() {
+            showPage('form-page');
+            document.getElementById('auditeur').value = "Utilisateur Public";
+            initializeWeeks();
+            initializeActionButtons();
+        }
+
+        function generatePublicQRCodes() {
+            const currentUrl = window.location.href;
+           
+            // QR Code Application
+            const qrApp = qrcode(0, 'M');
+            qrApp.addData(currentUrl);
+            qrApp.make();
+            document.getElementById('qr-app-public').innerHTML = qrApp.createImgTag(5);
+           
+            // QR Code Partage
+            const qrShare = qrcode(0, 'M');
+            qrShare.addData(`Check-list Audit Leoni - ${currentUrl}`);
+            qrShare.make();
+            document.getElementById('qr-share-public').innerHTML = qrShare.createImgTag(5);
+           
+            // Afficher le lien
+            document.getElementById('publicLink').textContent = currentUrl;
+        }
+       
+        function copyPublicLink() {
+            navigator.clipboard.writeText(window.location.href)
+                .then(() => alert('✅ Lien copié ! Partagez-le avec vos collègues.'))
+                .catch(() => alert('❌ Erreur lors de la copie'));
+        }
+       
+        function shareOnSocialMedia(platform) {
+            const url = encodeURIComponent(window.location.href);
+            const text = encodeURIComponent("Check-list d'audit Leoni - Outil gratuit et complet");
+           
+            const links = {
+                whatsapp: `https://wa.me/?text=${text}%20${url}`,
+                email: `mailto:?subject=Check-list Audit Leoni&body=${text}%20${url}`
+            };
+           
+            window.open(links[platform], '_blank');
+        }
+
+        // FONCTIONS EXISTANTES
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            document.getElementById(pageId).classList.add('active');
+        }
+
+        function initializeWeeks() {
+            const semaineSelect = document.getElementById('semaine');
+            if (!semaineSelect) return;
+           
+            semaineSelect.innerHTML = '';
+            for (let i = 1; i <= 52; i++) {
+                const option = document.createElement('option');
+                option.value = `KW${i}`;
+                option.textContent = `KW${i}`;
+                semaineSelect.appendChild(option);
+            }
+           
+            const today = new Date();
+            const weekNumber = getWeekNumber(today);
+            semaineSelect.value = `KW${weekNumber}`;
+        }
+
+        function getWeekNumber(date) {
+            const firstDayOfYear = new Date(date.getFullYear(), 0, 1);
+            const pastDaysOfYear = (date - firstDayOfYear) / 86400000;
+            return Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
+        }
+
+        // Au chargement de la page
+        document.addEventListener('DOMContentLoaded', function() {
+            generatePublicQRCodes();
+            // Initialiser directement en mode public
+            startApplication();
+        });
+
+        // AJOUTEZ TOUTES VOS AUTRES FONCTIONS EXISTANTES ICI...
+        // showResults(), createCharts(), saveAudit(), etc.
+
+    </script>
+</body>
+</html> 
